@@ -1,0 +1,5 @@
+.env
+.env.local
+deno.lock
+.DS_Store
+*.log
