@@ -61,4 +61,5 @@ deno task setwebhook https://<твой-проект>.deno.dev/webhook
 - `POST tg-chat` `{ chatId, text, mode }` → `{ reply, state }` — реплика Мелио (грузит память по chatId)
 - `POST tg-entitlement` `{ chatId }` → `{ active }` — активна ли подписка
 
-Deep-link для подключения из приложения: `https://t.me/<bot_username>?start=<one-time-token>`.
+Deep-link для подключения из приложения: `https://t.me/melyo_ai_bot?start=<one-time-token>`.
+На бэкенде Supabase задай `BOT_USERNAME=melyo_ai_bot` — из него собирается deep-link.
