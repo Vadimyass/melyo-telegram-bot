@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --allow-net --allow-env --unstable-kv src/main.ts",
+    "dev": "deno run --allow-net --allow-env --unstable-kv --unstable-cron src/main.ts",
     "setwebhook": "deno run --allow-net --allow-env scripts/set-webhook.ts"
   },
   "imports": {

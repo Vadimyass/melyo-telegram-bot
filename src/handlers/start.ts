@@ -1,5 +1,6 @@
 import type { BotContext } from "../bot.ts";
 import { linkAccount } from "../api.ts";
+import { mainMenu } from "../keyboards.ts";
 
 // /start [payload]: payload — одноразовый токен из deep-link приложения Melyo.
 export async function onStart(ctx: BotContext) {
@@ -13,6 +14,7 @@ export async function onStart(ctx: BotContext) {
         ctx.session.userId = r.userId;
         await ctx.reply(
           `Привет${r.name ? ", " + r.name : ""}! Это Мелио. Теперь я на связи здесь — буду присылать разборы и напоминать о шагах. Что у тебя сейчас в работе?`,
+          { reply_markup: mainMenu() },
         );
         return;
       }

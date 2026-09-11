@@ -1,5 +1,6 @@
 import type { BotContext } from "../bot.ts";
 import { melioChat } from "../api.ts";
+import { forwardToSupport } from "./support.ts";
 
 const HISTORY_CAP = 20;
 
@@ -8,11 +9,14 @@ export async function onText(ctx: BotContext) {
   const chatId = ctx.chat?.id;
   if (!text || !chatId) return;
 
-  if (!ctx.session.linked) {
-    await ctx.reply("Сначала подключи меня из приложения Melyo — так я увижу твой разбор и смогу отвечать по делу.");
+  // Режим поддержки: следующее сообщение уходит команде, а не Мелио.
+  if (ctx.session.state === "support") {
+    await forwardToSupport(ctx, text);
     return;
   }
 
+  // «Подключён/нет» — источник правды в Supabase (telegram_links по chatId), а не в
+  // эфемерной сессии бота. tg-chat сам вернёт подсказку, если аккаунт не связан.
   await ctx.replyWithChatAction("typing");
   try {
     const mode = ctx.session.state === "awaiting_artifact" ? "review" : "chat";

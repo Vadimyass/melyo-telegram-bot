@@ -36,6 +36,8 @@ scripts/
 | `MELYO_API_KEY` | supabase anon key |
 | `BOT_API_SECRET` | общий секрет с бэкендом (заголовок `x-bot-secret`) |
 | `WEBHOOK_SECRET` | секрет проверки вебхука Telegram |
+| `ADMIN_CHAT_ID` | Telegram id Вадима — куда падают обращения в поддержку |
+| `APP_URL` | ссылка на приложение для кнопки (по умолчанию `https://melyo.tech`) |
 
 ## Локальный запуск
 

@@ -2,6 +2,7 @@
 import { webhookCallback } from "grammy";
 import { bot } from "./bot.ts";
 import { assertConfig, config } from "./config.ts";
+import "./cron.ts";
 
 assertConfig();
 

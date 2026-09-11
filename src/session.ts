@@ -5,7 +5,7 @@ import type { StorageAdapter } from "grammy";
 export interface SessionData {
   linked: boolean;
   userId?: string;
-  state: "idle" | "awaiting_artifact";
+  state: "idle" | "awaiting_artifact" | "support";
   history: { role: "user" | "melio"; content: string }[];
 }
 

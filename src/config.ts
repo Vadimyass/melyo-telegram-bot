@@ -6,6 +6,8 @@ export const config = {
   apiKey: Deno.env.get("MELYO_API_KEY") ?? "", // supabase anon key
   botApiSecret: Deno.env.get("BOT_API_SECRET") ?? "", // общий секрет для tg-роутов бэкенда
   webhookSecret: Deno.env.get("WEBHOOK_SECRET") ?? "", // проверка, что апдейт пришёл от Telegram
+  adminChatId: Number(Deno.env.get("ADMIN_CHAT_ID") ?? 0), // Telegram id Вадима — куда падает поддержка
+  appUrl: Deno.env.get("APP_URL") ?? "https://melyo.tech",
 };
 
 export function assertConfig(): void {

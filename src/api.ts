@@ -28,3 +28,7 @@ export const melioChat = (chatId: number, text: string, mode: "chat" | "review" 
 // Активна ли подписка/доступ — для гейтинга премиум-флоу.
 export const botEntitlement = (chatId: number) =>
   call<{ active: boolean }>("tg-entitlement", { chatId });
+
+// Проактивные чек-ины: бэкенд возвращает готовые сообщения {chatId, text} к отправке.
+export const fetchCheckins = (limit = 50) =>
+  call<{ messages: { chatId: number; text: string }[] }>("tg-checkins", { limit });
