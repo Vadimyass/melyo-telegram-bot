@@ -46,5 +46,3 @@ bot.api.setMyCommands([
   { command: "support", description: "Связаться с поддержкой" },
   { command: "help", description: "Что я умею" },
 ]).catch(() => {});
-
-export { forwardToSupport };
