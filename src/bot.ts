@@ -5,6 +5,7 @@ import { onStart } from "./handlers/start.ts";
 import { onText } from "./handlers/message.ts";
 import { onCallback } from "./handlers/callbacks.ts";
 import { onReply } from "./handlers/support.ts";
+import { onReview } from "./handlers/review.ts";
 import { mainMenu } from "./keyboards.ts";
 import { runCheckins } from "./cron.ts";
 
@@ -24,6 +25,7 @@ bot.command("support", (ctx) => {
   ctx.session.state = "support";
   return ctx.reply("Опиши проблему одним сообщением — передам команде Melyo, ответят тебе здесь же.");
 });
+bot.command("review", onReview);
 bot.command("reply", onReply);
 bot.command("checkins_now", async (ctx) => {
   if (!config.adminChatId || ctx.chat?.id !== config.adminChatId) return;
@@ -43,6 +45,7 @@ bot.catch((err) => console.error("bot error:", err.error));
 // Пункты меню-команд в интерфейсе Telegram (идемпотентно, ошибки глотаем).
 bot.api.setMyCommands([
   { command: "menu", description: "Меню" },
+  { command: "review", description: "Разобрать пост / прайс / шапку" },
   { command: "support", description: "Связаться с поддержкой" },
   { command: "help", description: "Что я умею" },
 ]).catch(() => {});
