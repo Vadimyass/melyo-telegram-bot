@@ -29,6 +29,39 @@ export const melioChat = (chatId: number, text: string, mode: "chat" | "review" 
 export const botEntitlement = (chatId: number) =>
   call<{ active: boolean }>("tg-entitlement", { chatId });
 
+// Продовження підписок по токену картки — логіка на бекенді, бот лише тригерить.
+export const renewSubscriptions = (limit = 50) =>
+  call<{ processed: number; results: Record<string, number> }>("sub-renew", { limit });
+
 // Проактивные чек-ины: бэкенд возвращает готовые сообщения {chatId, text} к отправке.
 export const fetchCheckins = (limit = 50) =>
   call<{ messages: { chatId: number; text: string }[] }>("tg-checkins", { limit });
+
+// ——— Контроль підписника ———
+export type Button = { text: string; data?: string; url?: string };
+export type Settings = {
+  daily_time: string;
+  frequency: "daily" | "weekdays" | "3x_week" | "weekly";
+  quiet_start: string;
+  quiet_end: string;
+  weekly_report: boolean;
+  nudges_paused_until: string | null;
+};
+type SubResult = { status: string; reason?: string; accessUntil?: string | null; pauseUntil?: string | null; charged?: boolean; result?: string };
+
+export const fetchDue = (limit = 50) =>
+  call<{ messages: { id: string; chatId: number; text: string; buttons: Button[][] | null }[] }>("tg-due", { limit });
+export const ackDelivery = (items: { id: string; ok: boolean; error?: string; blocked?: boolean; chatId?: number }[]) =>
+  call<{ status: string }>("tg-ack", { items });
+export const subStatus = (chatId: number) =>
+  call<{ status: string; text?: string; subStatus?: string | null }>("tg-status", { chatId });
+export const getSettings = (chatId: number) =>
+  call<{ status: string; settings?: Settings }>("tg-settings", { chatId });
+export const setSettings = (chatId: number, settings: Record<string, unknown>) =>
+  call<{ status: string; settings?: Settings }>("tg-settings", { chatId, settings });
+export const subAction = (chatId: number, action: "pause" | "unpause" | "resume" | "cancel", weeks?: number) =>
+  call<SubResult>("tg-sub-action", { chatId, action, weeks });
+export const memory = (chatId: number, forget?: "history" | "work" | "all") =>
+  call<{ status: string; text?: string; empty?: boolean }>("tg-memory", { chatId, forget });
+export const cancelFeedback = (chatId: number, reason: string) =>
+  call<{ status: string }>("tg-cancel-feedback", { chatId, reason });

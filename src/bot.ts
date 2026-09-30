@@ -7,7 +7,8 @@ import { onCallback } from "./handlers/callbacks.ts";
 import { onReply } from "./handlers/support.ts";
 import { onReview } from "./handlers/review.ts";
 import { mainMenu } from "./keyboards.ts";
-import { runCheckins } from "./cron.ts";
+import { runCheckins, runRenewals } from "./cron.ts";
+import { onCancel, onMemory, onPauseMenu, onSettings, onStatus } from "./handlers/control.ts";
 
 export type BotContext = Context & SessionFlavor<SessionData>;
 
@@ -32,6 +33,16 @@ bot.command("checkins_now", async (ctx) => {
   const sent = await runCheckins();
   await ctx.reply(`Разослано чек-инов: ${sent}`);
 });
+bot.command("renew_now", async (ctx) => {
+  if (!config.adminChatId || ctx.chat?.id !== config.adminChatId) return;
+  const n = await runRenewals();
+  await ctx.reply(`Оброблено підписок: ${n}`);
+});
+bot.command("cancel", onCancel);
+bot.command("status", onStatus);
+bot.command("settings", onSettings);
+bot.command("pause", onPauseMenu);
+bot.command("memory", onMemory);
 bot.command("help", (ctx) =>
   ctx.reply(
     "Я Мелио — наставник по бизнес-мышлению. Пиши, что у тебя сейчас в работе, кидай пост или прайс на разбор — помогу и напомню о шагах. Кнопка «Поддержка» или /support — если нужен человек.",
@@ -48,4 +59,9 @@ bot.api.setMyCommands([
   { command: "review", description: "Разобрать пост / прайс / шапку" },
   { command: "support", description: "Связаться с поддержкой" },
   { command: "help", description: "Что я умею" },
+  { command: "status", description: "Моя підписка і ліміти" },
+  { command: "settings", description: "Час, частота, тихі години" },
+  { command: "memory", description: "Що Меліо про мене памʼятає" },
+  { command: "pause", description: "Пауза підписки" },
+  { command: "cancel", description: "Скасувати підписку" },
 ]).catch(() => {});
