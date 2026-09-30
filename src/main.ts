@@ -6,8 +6,11 @@ import "./cron.ts";
 
 assertConfig();
 
+// За замовчуванням grammY чекає 10 с, а відповідь Меліо (LLM) буває довшою: тоді вебхук
+// віддавав помилку, Telegram повторював апдейт і бот відповідав двічі.
 const handleUpdate = webhookCallback(bot, "std/http", {
   secretToken: config.webhookSecret || undefined,
+  timeoutMilliseconds: 55_000,
 });
 
 Deno.serve(async (req) => {

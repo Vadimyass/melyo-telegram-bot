@@ -25,6 +25,21 @@ try {
   kv = null;
 }
 
+// Захист від дублів: Telegram повторює апдейт, якщо вебхук не відповів вчасно (довгий
+// виклик LLM). Атомарно фіксуємо update_id — повтор з тим самим id пропускаємо.
+const seenMem = new Set<number>();
+export async function firstSeen(updateId: number): Promise<boolean> {
+  if (!kv) {
+    if (seenMem.has(updateId)) return false;
+    seenMem.add(updateId);
+    if (seenMem.size > 5000) seenMem.clear();
+    return true;
+  }
+  const key = ["upd", updateId];
+  const res = await kv.atomic().check({ key, versionstamp: null }).set(key, 1, { expireIn: 86_400_000 }).commit();
+  return res.ok;
+}
+
 export function kvStorage<T>(prefix = "sess"): StorageAdapter<T> {
   if (!kv) {
     const mem = new Map<string, T>();

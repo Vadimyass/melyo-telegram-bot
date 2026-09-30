@@ -1,6 +1,6 @@
 import { Bot, type Context, session, type SessionFlavor } from "grammy";
 import { config } from "./config.ts";
-import { initial, kvStorage, type SessionData } from "./session.ts";
+import { firstSeen, initial, kvStorage, type SessionData } from "./session.ts";
 import { onStart } from "./handlers/start.ts";
 import { onText } from "./handlers/message.ts";
 import { onCallback } from "./handlers/callbacks.ts";
@@ -13,6 +13,12 @@ import { onCancel, onMemory, onPauseMenu, onSettings, onStatus } from "./handler
 export type BotContext = Context & SessionFlavor<SessionData>;
 
 export const bot = new Bot<BotContext>(config.botToken);
+
+// Повторна доставка того самого апдейту (ретрай Telegram) — ігноруємо, щоб не відповідати двічі.
+bot.use(async (ctx, next) => {
+  if (!(await firstSeen(ctx.update.update_id))) return;
+  await next();
+});
 
 bot.use(session({
   initial,
