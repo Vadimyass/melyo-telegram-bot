@@ -2,7 +2,7 @@ import type { BotContext } from "../bot.ts";
 import { melioChat } from "../api.ts";
 
 const PROMPT =
-  "Пришли текст поста, прайса или шапки одним сообщением — разберу: что сильно, слабое место и одно важное изменение.";
+  "Надішли текст поста, прайсу чи шапки одним повідомленням — розберу: що сильне, слабке місце й одна найважливіша зміна.";
 
 // /review [текст]: с текстом — разбор сразу (не зависит от сессии); без текста — ждём материал.
 export async function onReview(ctx: BotContext) {
@@ -24,6 +24,6 @@ export async function runReview(ctx: BotContext, chatId: number, text: string) {
     const r = await melioChat(chatId, text, "review");
     await ctx.reply(r.reply);
   } catch (_) {
-    await ctx.reply("Не получилось разобрать — попробуй ещё раз через минуту.");
+    await ctx.reply("Не вийшло розібрати — спробуй ще раз за хвилину.");
   }
 }

@@ -1,8 +1,9 @@
 // Проактивные чек-ины: раз в неделю бэкенд отдаёт готовые сообщения, бот их рассылает.
 // Deno Deploy исполняет Deno.cron нативно (Cron jobs включены у приложения).
 import { bot } from "./bot.ts";
-import { GrammyError, InlineKeyboard } from "grammy";
-import { ackDelivery, type Button, fetchCheckins, fetchDue, renewSubscriptions } from "./api.ts";
+import { GrammyError } from "grammy";
+import { ackDelivery, fetchCheckins, fetchDue, renewSubscriptions } from "./api.ts";
+import { fromButtons } from "./keyboards.ts";
 
 // Один прогон рассылки чек-инов. Возвращает число отправленных.
 export async function runCheckins(): Promise<number> {
@@ -32,23 +33,13 @@ export async function runRenewals(): Promise<number> {
   return total;
 }
 
-function keyboard(rows: Button[][] | null): InlineKeyboard | undefined {
-  if (!rows?.length) return undefined;
-  const kb = new InlineKeyboard();
-  for (const row of rows) {
-    for (const b of row) b.url ? kb.url(b.text, b.url) : kb.text(b.text, b.data ?? "noop");
-    kb.row();
-  }
-  return kb;
-}
-
 // Доставка черги: бекенд уже застосував тихі години, ліміти й затухання — тут лише відправка.
 export async function runDelivery(): Promise<number> {
   const { messages } = await fetchDue(50);
   const acks: { id: string; ok: boolean; error?: string; blocked?: boolean; chatId?: number }[] = [];
   for (const m of messages ?? []) {
     try {
-      await bot.api.sendMessage(m.chatId, m.text, { reply_markup: keyboard(m.buttons) });
+      await bot.api.sendMessage(m.chatId, m.text, { reply_markup: fromButtons(m.buttons) });
       acks.push({ id: m.id, ok: true });
     } catch (e) {
       const blocked = e instanceof GrammyError && e.error_code === 403;

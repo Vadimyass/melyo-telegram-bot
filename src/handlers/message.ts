@@ -1,5 +1,6 @@
 import type { BotContext } from "../bot.ts";
-import { melioChat } from "../api.ts";
+import { commitNote, melioChat } from "../api.ts";
+import { fromButtons } from "../keyboards.ts";
 import { forwardToSupport } from "./support.ts";
 
 const HISTORY_CAP = 20;
@@ -17,6 +18,15 @@ export async function onText(ctx: BotContext) {
 
   // «Подключён/нет» — источник правды в Supabase (telegram_links по chatId), а не в
   // эфемерной сессии бота. tg-chat сам вернёт подсказку, если аккаунт не связан.
+  // Відповідь на «що завадило / що вийшло» — зберігаємо до кроку і далі говоримо як звичайно:
+  // Меліо вже бачить результат у контексті й підбере наступний крок.
+  if (ctx.session.state === "awaiting_outcome" && ctx.session.pendingCommitId) {
+    const id = ctx.session.pendingCommitId;
+    ctx.session.state = "idle";
+    ctx.session.pendingCommitId = undefined;
+    await commitNote(chatId, id, text).catch(() => {});
+  }
+
   await ctx.replyWithChatAction("typing");
   try {
     const mode = ctx.session.state === "awaiting_artifact" ? "review" : "chat";
@@ -26,8 +36,8 @@ export async function onText(ctx: BotContext) {
     if (ctx.session.history.length > HISTORY_CAP) {
       ctx.session.history = ctx.session.history.slice(-HISTORY_CAP);
     }
-    await ctx.reply(r.reply);
+    await ctx.reply(r.reply, { reply_markup: fromButtons(r.buttons) });
   } catch (_) {
-    await ctx.reply("Что-то заглючило на моей стороне. Попробуй ещё раз через минуту.");
+    await ctx.reply("Щось заглючило на моєму боці. Спробуй ще раз за хвилину.");
   }
 }

@@ -23,7 +23,13 @@ export const linkAccount = (token: string, chatId: number) =>
 
 // Разговор с Мелио: бэкенд грузит память по chatId, гоняет runMelio и отдаёт ответ.
 export const melioChat = (chatId: number, text: string, mode: "chat" | "review" = "chat") =>
-  call<{ reply: string; state?: string }>("tg-chat", { chatId, text, mode });
+  call<{ reply: string; state?: string; buttons?: Button[][] }>("tg-chat", { chatId, text, mode });
+
+// Крок «якщо–то»: взяти / відмовитись / результат (done | partial | not).
+export const commitAction = (chatId: number, id: string, action: string) =>
+  call<{ status: string; reply?: string; awaitNote?: boolean }>("tg-commit", { chatId, id, action });
+export const commitNote = (chatId: number, id: string, text: string) =>
+  call<{ status: string }>("tg-commit-note", { chatId, id, text });
 
 // Активна ли подписка/доступ — для гейтинга премиум-флоу.
 export const botEntitlement = (chatId: number) =>

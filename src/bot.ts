@@ -21,17 +21,17 @@ bot.use(session({
 }));
 
 bot.command("start", onStart);
-bot.command("menu", (ctx) => ctx.reply("Чем помочь?", { reply_markup: mainMenu() }));
+bot.command("menu", (ctx) => ctx.reply("Чим допомогти?", { reply_markup: mainMenu() }));
 bot.command("support", (ctx) => {
   ctx.session.state = "support";
-  return ctx.reply("Опиши проблему одним сообщением — передам команде Melyo, ответят тебе здесь же.");
+  return ctx.reply("Опиши проблему одним повідомленням — передам команді Melyo, відповімо тобі тут же.");
 });
 bot.command("review", onReview);
 bot.command("reply", onReply);
 bot.command("checkins_now", async (ctx) => {
   if (!config.adminChatId || ctx.chat?.id !== config.adminChatId) return;
   const sent = await runCheckins();
-  await ctx.reply(`Разослано чек-инов: ${sent}`);
+  await ctx.reply(`Розіслано чек-інів: ${sent}`);
 });
 bot.command("renew_now", async (ctx) => {
   if (!config.adminChatId || ctx.chat?.id !== config.adminChatId) return;
@@ -45,7 +45,7 @@ bot.command("pause", onPauseMenu);
 bot.command("memory", onMemory);
 bot.command("help", (ctx) =>
   ctx.reply(
-    "Я Мелио — наставник по бизнес-мышлению. Пиши, что у тебя сейчас в работе, кидай пост или прайс на разбор — помогу и напомню о шагах. Кнопка «Поддержка» или /support — если нужен человек.",
+    "Я Меліо — наставник із бізнес-мислення. Пиши, що в тебе зараз у роботі, кидай пост чи прайс на розбір — допоможу й нагадаю про кроки. Кнопка «Підтримка» або /support — якщо потрібна людина.",
   ));
 
 bot.on("callback_query:data", onCallback);
@@ -56,9 +56,9 @@ bot.catch((err) => console.error("bot error:", err.error));
 // Пункты меню-команд в интерфейсе Telegram (идемпотентно, ошибки глотаем).
 bot.api.setMyCommands([
   { command: "menu", description: "Меню" },
-  { command: "review", description: "Разобрать пост / прайс / шапку" },
-  { command: "support", description: "Связаться с поддержкой" },
-  { command: "help", description: "Что я умею" },
+  { command: "review", description: "Розібрати пост / прайс / шапку" },
+  { command: "support", description: "Звʼязатися з підтримкою" },
+  { command: "help", description: "Що я вмію" },
   { command: "status", description: "Моя підписка і ліміти" },
   { command: "settings", description: "Час, частота, тихі години" },
   { command: "memory", description: "Що Меліо про мене памʼятає" },

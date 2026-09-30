@@ -6,13 +6,13 @@ export async function forwardToSupport(ctx: BotContext, text: string) {
   const chatId = ctx.chat?.id;
   ctx.session.state = "idle";
   if (config.adminChatId && chatId) {
-    const who = ctx.from?.username ? `@${ctx.from.username}` : (ctx.from?.first_name ?? "аноним");
+    const who = ctx.from?.username ? `@${ctx.from.username}` : (ctx.from?.first_name ?? "анонім");
     await ctx.api.sendMessage(
       config.adminChatId,
-      `🆘 Поддержка от ${who} (chat ${chatId}):\n\n${text}\n\nОтветить: /reply ${chatId} <текст>`,
+      `🆘 Підтримка від ${who} (chat ${chatId}):\n\n${text}\n\nВідповісти: /reply ${chatId} <текст>`,
     );
   }
-  await ctx.reply("Передал команде. Ответим тебе здесь же — обычно в течение дня.");
+  await ctx.reply("Передав команді. Відповімо тобі тут же — зазвичай протягом дня.");
 }
 
 // Ответ поддержки: /reply <chatId> <текст>. Только из админ-чата.
@@ -26,9 +26,9 @@ export async function onReply(ctx: BotContext) {
   }
   const target = Number(m[1]);
   try {
-    await ctx.api.sendMessage(target, `Ответ поддержки Melyo:\n\n${m[2]}`);
-    await ctx.reply("Отправлено.");
+    await ctx.api.sendMessage(target, `Відповідь підтримки Melyo:\n\n${m[2]}`);
+    await ctx.reply("Надіслано.");
   } catch (e) {
-    await ctx.reply(`Не удалось отправить: ${e instanceof Error ? e.message : String(e)}`);
+    await ctx.reply(`Не вдалося надіслати: ${e instanceof Error ? e.message : String(e)}`);
   }
 }

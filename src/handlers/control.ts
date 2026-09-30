@@ -2,7 +2,7 @@
 // зі сповіщень. Правило: будь-яка дія — один-два тапи, і людина одразу бачить результат.
 import { InlineKeyboard } from "grammy";
 import type { BotContext } from "../bot.ts";
-import { cancelFeedback, getSettings, memory, type Settings, setSettings, subAction, subStatus } from "../api.ts";
+import { cancelFeedback, commitAction, getSettings, memory, type Settings, setSettings, subAction, subStatus } from "../api.ts";
 import { config } from "../config.ts";
 
 const NOT_LINKED = "Акаунт ще не підключено. Відкрий мене із застосунку Melyo кнопкою «Підключити Telegram».";
@@ -142,6 +142,22 @@ export async function onControlCallback(ctx: BotContext, data: string): Promise<
       await memory(chatId, action);
       ctx.session.history = [];
       await ctx.reply(action === "all" ? "Готово, все забув." : action === "history" ? "Переписку забув." : "Нотатки про справи забув.");
+    }
+    return true;
+  }
+  if (scope === "cm") {
+    // Прибираємо кнопки, щоб подвійний тап не записав результат двічі.
+    await ctx.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
+    const r = await commitAction(chatId, arg, action);
+    if (r.status === "not_linked") await ctx.reply(NOT_LINKED);
+    else if (r.status === "stale") await ctx.reply("Цей крок уже закрито — все збережено.");
+    else if (r.status === "not_found") await ctx.reply("Не знайшов цей крок. Напиши, над чим зараз працюєш — підберемо новий.");
+    else if (r.reply) {
+      await ctx.reply(r.reply);
+      if (r.awaitNote) {
+        ctx.session.state = "awaiting_outcome";
+        ctx.session.pendingCommitId = arg;
+      }
     }
     return true;
   }
